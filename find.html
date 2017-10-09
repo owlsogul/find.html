@@ -67,6 +67,12 @@
           data: selectedDevice,
           success: function(msg) {
             console.log(msg);
+            if (msg == success){
+              alert('save complete');
+            }
+            else {
+              alert('save fail...');
+            }
           }
         });
       });
