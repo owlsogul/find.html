@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+  </head>
+  <body>
+    <table border=1px>
+      <tbody class="TableBody">
+        <tr class="HeaderRow" id="Header">
+          <td>id</td>
+          <td>type</td>
+          <td>memo</td>
+          <td>save</td>
+        </tr>
+      </tbody>
+    </table>
+    <script>
+      var test = {};
+      test.id = "id test";
+      test.type = "Type test";
+
+      addRow(test);
+      addRow(test);
+      addRow(test);
+
+      function addRow(obj){
+        var rowNum = $('.ContentRow').length;
+        $('.TableBody')
+        .append(
+          '<tr class="ContentRow" id="'+ rowNum + '">' +
+          '<td class="RowId">' + test.id + '</td>' +
+          '<td class="RowType">' + test.type + '</td>' +
+          '<td class="RowMemo"><input type="textfield" class="MemoField"/></td>' +
+          '<td class="RowButton"><input type="submit" class="SaveButton" id="'+ rowNum + '"/></td></tr>'
+        );
+      }
+
+      $(function (){
+        var socket = io();
+        socket.on('message', function (msg){
+          console.log('received msg : ' + msg);
+          addRow($.parseJSON(msg));
+        });
+      });
+
+      $('.SaveButton').click(function(){
+        var rowId = this.id;
+        //console.log("clicked row number is " + rowId);
+        var $selectedRow = $('#' + rowId +'.ContentRow');
+        //console.log("selected row`s html source is " + $selectedRow.html());
+        //console.log("id is " + $selectedRow.attr('id'));
+        var deviceId = $selectedRow.children('.RowId').text();
+        var deviceType = $selectedRow.children('.RowType').text();
+        var deviceMemo = $selectedRow.children('.RowMemo').children('.MemoField').val();
+        //console.log(deviceId + deviceType + deviceMemo);
+        var selectedDevice = {};
+        selectedDevice.id = deviceId;
+        selectedDevice.type = deviceType;
+        selectedDevice.memo = deviceMemo;
+        //console.log(JSON.stringify(selectedDevice));
+        $.ajax({
+          type: 'POST',
+          url: '/?mode=save',
+          data: selectedDevice,
+          success: function(msg) {
+            console.log(msg);
+          }
+        });
+      });
+
+
+
+    </script>
+  </body>
+</html>
