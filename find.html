@@ -63,7 +63,7 @@
         //console.log(JSON.stringify(selectedDevice));
         $.ajax({
           type: 'POST',
-          url: '/?mode=save',
+          url: '/mango?mode=save',
           data: selectedDevice,
           success: function(msg) {
             console.log(msg);
